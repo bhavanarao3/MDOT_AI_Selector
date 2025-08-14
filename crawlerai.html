@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDOT Advanced Platform Selector</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .progress-bar {
+            height: 8px;
+            border-radius: 9999px;
+            background-color: #e5e7eb;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #3b82f6;
+            transition: width 0.5s ease-in-out;
+        }
+        .input-group label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 12px 20px;
+            background-color: #e5e7eb;
+            border-radius: 10px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .input-group input[type="checkbox"]:checked + label,
+        .input-group input[type="radio"]:checked + label {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .input-group input[type="checkbox"],
+        .input-group input[type="radio"] {
+            margin-right: 12px;
+        }
+        .recommendation-card {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        @media print {
+            body { background-color: #ffffff; }
+            .no-print { display: none; }
+            .container { box-shadow: none; border: none; max-width: none; width: 100%; }
+            .recommendation-card { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 sm:p-8 flex flex-col items-center">
+
+    <div class="container bg-white p-6 sm:p-10 rounded-xl shadow-2xl w-full max-w-5xl">
+        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-2 text-gray-800">
+            MDOT VPI Platform & AI Selector
+        </h1>
+        <p class="text-center text-gray-600 mb-8 text-base sm:text-lg">
+            This tool helps you select the best robotic crawler software and AI algorithms based on your specific requirements.
+        </p>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar mb-8 no-print">
+            <div id="progress-fill" class="progress-bar-fill w-0"></div>
+        </div>
+
+        <!-- Main interactive section with steps -->
+        <div id="selector-tool-container" class="space-y-8">
+            <!-- Step 1: AI Defect Detection -->
+            <div id="step-1">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">1. AI Defect Detection</h2>
+                <p class="text-gray-600 mb-4">Do you require AI-assisted detection?</p>
+                <div class="flex flex-wrap gap-4">
+                    <button class="answer-btn px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-medium hover:bg-blue-500 hover:text-white transition-all duration-200" data-step="1" data-answer="ai-detection" data-value="true">Yes</button>
+                    <button class="answer-btn px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-medium hover:bg-blue-500 hover:text-white transition-all duration-200" data-step="1" data-answer="ai-detection" data-value="false">No</button>
+                </div>
+            </div>
+
+            <!-- Conditional Step 1a: Defect Types -->
+            <div id="step-1a" class="hidden">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">1a. Which types of defects are most important?</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 input-group">
+                    <div>
+                        <input type="checkbox" id="defect-cracks" name="defects" value="Cracks" class="hidden">
+                        <label for="defect-cracks">Cracks</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="defect-spalling" name="defects" value="Spalling" class="hidden">
+                        <label for="defect-spalling">Spalling</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="defect-corrosion" name="defects" value="Corrosion" class="hidden">
+                        <label for="defect-corrosion">Corrosion</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="defect-misalignment" name="defects" value="Joint Misalignment" class="hidden">
+                        <label for="defect-misalignment">Joint Misalignment</label>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button class="next-step-btn px-6 py-3 rounded-lg bg-blue-500 text-white font-bold hover:bg-blue-600 transition-all duration-200">Next</button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Quantitative Measurement -->
+            <div id="step-2" class="hidden">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">2. Quantitative Measurement</h2>
+                <p class="text-gray-600 mb-4">Do you need quantitative measurements?</p>
+                <div class="flex flex-wrap gap-4">
+                    <button class="answer-btn px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-medium hover:bg-blue-500 hover:text-white transition-all duration-200" data-step="2" data-answer="quantitative" data-value="true">Yes</button>
+                    <button class="answer-btn px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-medium hover:bg-blue-500 hover:text-white transition-all duration-200" data-answer="quantitative" data-value="false">No</button>
+                </div>
+            </div>
+
+            <!-- Conditional Step 2a: Measurement Metrics -->
+            <div id="step-2a" class="hidden">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">2a. Which metrics are important?</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 input-group">
+                    <div>
+                        <input type="checkbox" id="metric-width" name="metrics" value="Crack Width" class="hidden">
+                        <label for="metric-width">Crack Width</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="metric-joint-separation" name="metrics" value="Joint Separation" class="hidden">
+                        <label for="metric-joint-separation">Joint Separation</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="metric-deformation" name="metrics" value="Pipe Deformation" class="hidden">
+                        <label for="metric-deformation">Pipe Deformation</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="metric-pacp" name="metrics" value="PACP Compliance" class="hidden">
+                        <label for="metric-pacp">PACP Compliance</label>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button class="next-step-btn px-6 py-3 rounded-lg bg-blue-500 text-white font-bold hover:bg-blue-600 transition-all duration-200">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 3: 3D Reconstruction -->
+            <div id="step-3" class="hidden">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">3. 3D Reconstruction / Sensor Integration</h2>
+                <p class="text-gray-600 mb-4">Do you require 3D reconstruction?</p>
+                <div class="flex flex-wrap gap-4">
+                    <button class="answer-btn px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-medium hover:bg-blue-500 hover:text-white transition-all duration-200" data-step="3" data-answer="3d-reconstruction" data-value="true">Yes</button>
+                    <button class="answer-btn px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-medium hover:bg-blue-500 hover:text-white transition-all duration-200" data-step="3" data-answer="3d-reconstruction" data-value="false">No</button>
+                </div>
+            </div>
+
+            <!-- Conditional Step 3a: Sensors -->
+            <div id="step-3a" class="hidden">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">3a. Which sensors are available on the crawler?</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 input-group">
+                    <div>
+                        <input type="checkbox" id="sensor-rgb" name="sensors" value="RGB Camera" class="hidden">
+                        <label for="sensor-rgb">RGB Camera</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="sensor-lidar" name="sensors" value="LiDAR" class="hidden">
+                        <label for="sensor-lidar">LiDAR</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="sensor-imu" name="sensors" value="IMU" class="hidden">
+                        <label for="sensor-imu">IMU</label>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button class="next-step-btn px-6 py-3 rounded-lg bg-blue-500 text-white font-bold hover:bg-blue-600 transition-all duration-200">Next</button>
+                </div>
+            </div>
+            
+            <!-- Step 4: Operational Requirements -->
+            <div id="step-4" class="hidden">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">4. Operational Requirements</h2>
+                <p class="text-gray-600 mb-4">Do you need GIS integration?</p>
+                <div class="flex flex-wrap gap-4">
+                    <button class="answer-btn px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-medium hover:bg-blue-500 hover:text-white transition-all duration-200" data-step="4" data-answer="gis-integration" data-value="true">Yes</button>
+                    <button class="answer-btn px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-medium hover:bg-blue-500 hover:text-white transition-all duration-200" data-answer="gis-integration" data-value="false">No</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Research Options -->
+            <div id="step-5" class="hidden">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">5. Future / Research Options</h2>
+                <p class="text-gray-600 mb-4">Are custom research-level pipelines desired?</p>
+                <div class="flex flex-wrap gap-4">
+                    <button class="answer-btn px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-medium hover:bg-blue-500 hover:text-white transition-all duration-200" data-step="5" data-answer="research" data-value="true">Yes</button>
+                    <button class="answer-btn px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-medium hover:bg-blue-500 hover:text-white transition-all duration-200" data-answer="research" data-value="false">No</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading and Reset/Export Buttons -->
+        <div id="post-steps-actions" class="hidden mt-8 text-center space-y-4 no-print">
+            <div id="loading" class="hidden text-center text-blue-600 font-medium">
+                <p>Generating recommendations...</p>
+            </div>
+            <div id="action-buttons" class="hidden flex justify-center space-x-4">
+                <button id="reset-button" class="px-6 py-3 rounded-lg bg-gray-400 text-white font-bold text-lg hover:bg-gray-500 transition-all duration-200 shadow-md">
+                    Reset
+                </button>
+                <button id="export-button-pdf" class="px-6 py-3 rounded-lg bg-green-500 text-white font-bold text-lg hover:bg-green-600 transition-all duration-200 shadow-md">
+                    Export as PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="hidden mt-8 p-6 bg-blue-50 rounded-xl shadow-inner border-t-4 border-blue-400">
+            <h2 class="text-2xl sm:text-3xl font-bold text-blue-700 mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-8 h-8 mr-3 text-blue-500">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                Your Recommended Platform(s)
+            </h2>
+            <div id="recommendation-output" class="space-y-8">
+                <!-- Recommendation output will be inserted here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data structure containing information for each platform
+        const platforms = {
+            'WinCan VX': {
+                ai: 1, quantitative: 1, gis: 1, research: 0,
+                feasibility: 'Mature, industry-standard, and NASSCO PACP certified. Excellent for quantitative measurements.',
+                inputRequirements: 'High-resolution video, laser profiler for measurements, and NASSCO PACP data log.',
+                vendor: 'WinCan / Envirosight',
+                links: 'https://www.wincan.com/',
+                dotUsage: 'Commonly used by contractors and DOTs for its industry-standard features.',
+                upgradePath: 'Integrate additional AI modules for defect-specific detection or upgrade to a cloud-based solution for shared data.',
+            },
+            'SewerAI Pioneer': {
+                ai: 1, quantitative: 0.5, gis: 1, research: 0,
+                feasibility: 'Cloud-based with strong AI capabilities, especially for NASSCO auto-tagging. Measurements require human validation.',
+                inputRequirements: 'High-resolution video, stable crawler movement.',
+                vendor: 'SewerAI',
+                links: 'https://sewerai.com/',
+                dotUsage: 'Macomb County, MI, uses their software with Flyability drones.',
+                upgradePath: 'SewerAI continuously updates its AI models and platform. Future upgrades are primarily platform-driven.'
+            },
+            'RedZone Robotics': {
+                ai: 1, quantitative: 1, gis: 1, research: 0.5,
+                feasibility: 'Provides comprehensive, multi-sensor solutions with a focus on data analysis and asset management.',
+                inputRequirements: 'Requires their proprietary multi-sensor inspection (MSI) technology.',
+                vendor: 'RedZone Robotics',
+                links: 'https://www.redzone.com/',
+                dotUsage: 'Used by large municipalities for a complete pipeline assessment program.',
+                upgradePath: 'Their platform is a holistic solution. Upgrades involve new hardware (like their YSI crawler) and software updates.'
+            },
+            'GraniteNet (CUES)': {
+                ai: 0, quantitative: 0.5, gis: 0, research: 0,
+                feasibility: 'Basic, manual system. NASSCO compliant but lacks modern automation features. Suitable for small-scale projects.',
+                inputRequirements: 'Standard-definition video, operator manual input.',
+                vendor: 'CUES',
+                links: 'https://cuesinc.com/products/granitenet/',
+                dotUsage: 'Historically used by many agencies, but often being upgraded to more modern systems.',
+                upgradePath: 'Migrating to a more advanced, AI-enabled platform like WinCan VX or SewerAI.'
+            },
+            'ArcGIS Utility Network': {
+                ai: 0, quantitative: 0, gis: 1, research: 0,
+                feasibility: 'A GIS backbone for data storage and visualization. Not an inspection tool itself. Essential for asset management.',
+                inputRequirements: 'Data exported from an inspection platform (e.g., WinCan, SewerAI).',
+                vendor: 'Esri',
+                links: 'https://www.esri.com/en-us/arcgis/products/arcgis-utility-network/overview',
+                dotUsage: 'Michigan DOT uses GIS integration for managing their culvert data.',
+                upgradePath: 'Integrating with more advanced inspection platforms to enable a seamless data flow from field to GIS.'
+            },
+            'ROS / Pix4D (Research)': {
+                ai: 0.5, quantitative: 1, gis: 0.5, research: 1,
+                feasibility: 'A research-level, open-source pipeline. Highly customizable but requires significant in-house development and expertise. Best for experimental 3D reconstruction.',
+                inputRequirements: 'Raw sensor data (video, LiDAR, IMU) from the crawler.',
+                vendor: 'Open-source / Research',
+                links: 'https://www.ros.org/, https://www.pix4d.com/',
+                dotUsage: 'Ohio DOT developed a custom crawler based on the Turtle Rover platform for their specific needs.',
+                upgradePath: 'This path *is* the future upgrade path for an organization wanting to build custom, agency-specific solutions.'
+            }
+        };
+
+        const algorithms = {
+            'YOLOv4 + SPP': {
+                defectTypes: ['Cracks', 'Joint Misalignment'],
+                sensors: ['RGB Camera'],
+                feasibility: 'High. A well-known object detection model. Fast and accurate, but may require custom training for specific defect types.',
+                links: 'https://pjreddie.com/darknet/yolo/',
+                upgradePath: 'YOLO is an evolving family of models. Upgrading to newer versions (YOLOv7, YOLOv8) can improve performance and speed.'
+            },
+            'PIRAT': {
+                defectTypes: ['Cracks', 'Spalling', 'Corrosion'],
+                sensors: ['LiDAR', 'RGB Camera'],
+                feasibility: 'High. A custom, multi-sensor approach that uses a structured light profiler to detect defects and provide quantitative measurements.',
+                links: 'http://www.nassco.org/', // PIRAT is an industry standard from NASSCO
+                upgradePath: 'PIRAT is a mature concept. Upgrades would likely involve a transition to a more modern hardware platform that supports it.'
+            },
+            'Deep Learning Monocular Imaging': {
+                defectTypes: ['Cracks', 'Spalling'],
+                sensors: ['RGB Camera'],
+                feasibility: 'Medium. Uses a single camera to perform quantitative measurements without a laser profiler. Requires a robust, pre-calibrated model. Accuracy can be a challenge.',
+                links: 'https://github.com/topics/monocular-depth-estimation', // General topic link
+                upgradePath: 'Research is ongoing to improve the accuracy of these models. Future upgrades would involve adopting more precise models.'
+            },
+            'Deep Learning Multi-Sensor Integration': {
+                defectTypes: ['Cracks', 'Spalling', 'Corrosion', 'Joint Misalignment'],
+                sensors: ['LiDAR', 'RGB Camera', 'IMU'],
+                feasibility: 'Low. This is a research-level approach that combines data from multiple sensors for a more robust understanding of the environment. High potential, but requires significant development.',
+                links: 'https://www.ros.org/', // ROS is a common framework for this
+                upgradePath: 'This is the ultimate upgrade path for building highly customized, robust inspection systems.'
+            }
+        };
+
+        const totalSteps = 5;
+        let userAnswers = {};
+        let currentStep = 1;
+
+        const selectorToolContainer = document.getElementById('selector-tool-container');
+        const resultsSection = document.getElementById('results-section');
+        const recommendationOutput = document.getElementById('recommendation-output');
+        const progressFill = document.getElementById('progress-fill');
+        const postStepsActions = document.getElementById('post-steps-actions');
+        const actionButtons = document.getElementById('action-buttons');
+
+        function updateProgress() {
+            const progress = (currentStep - 1) / totalSteps;
+            progressFill.style.width = `${progress * 100}%`;
+        }
+
+        function nextStep() {
+            const currentStepDiv = document.getElementById(`step-${currentStep}`);
+            if (currentStepDiv) {
+                currentStepDiv.classList.add('hidden');
+            }
+            currentStep++;
+            updateProgress();
+            
+            let nextStepId = `step-${currentStep}`;
+            
+            // Conditional logic to show/hide steps
+            if (currentStep === 2 && userAnswers['ai-detection'] === 'true') {
+                nextStepId = 'step-1a';
+            } else if (currentStep === 3 && userAnswers['quantitative'] === 'true') {
+                nextStepId = 'step-2a';
+            } else if (currentStep === 4 && userAnswers['3d-reconstruction'] === 'true') {
+                nextStepId = 'step-3a';
+            }
+
+            const nextStepDiv = document.getElementById(nextStepId);
+            if (nextStepDiv) {
+                nextStepDiv.classList.remove('hidden');
+            } else {
+                showLoading();
+            }
+        }
+
+        function showLoading() {
+            selectorToolContainer.classList.add('hidden');
+            postStepsActions.classList.remove('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+            setTimeout(generateRecommendation, 2500);
+        }
+
+        function generateRecommendation() {
+            document.getElementById('loading').classList.add('hidden');
+            actionButtons.classList.remove('hidden');
+            
+            // Score platforms
+            let scoredPlatforms = [];
+            for (const name in platforms) {
+                const platform = platforms[name];
+                let score = 0;
+                let maxPossibleScore = 0;
+
+                // AI Defect Detection
+                if (userAnswers['ai-detection'] === 'true') {
+                    maxPossibleScore += 1;
+                    if (platform.ai >= 1) score += 1;
+                    if (userAnswers['defects']) {
+                        maxPossibleScore += 1;
+                        if (platform.ai === 1) score += 1; // Full point for a detailed AI match
+                    }
+                }
+                // Quantitative Measurement
+                if (userAnswers['quantitative'] === 'true') {
+                    maxPossibleScore += 1;
+                    if (platform.quantitative >= 1) score += 1;
+                    if (userAnswers['metrics']) {
+                        maxPossibleScore += 1;
+                        if (platform.quantitative >= 1) score += 1; // Full point for a detailed quantitative match
+                    }
+                }
+                // 3D Reconstruction
+                if (userAnswers['3d-reconstruction'] === 'true') {
+                    maxPossibleScore += 1;
+                    if (platform.research >= 1) score += 1;
+                    if (userAnswers['sensors']) {
+                        maxPossibleScore += 1;
+                        if (platform.research >= 1) score += 1; // Full point for detailed sensor match
+                    }
+                }
+                // GIS Integration
+                if (userAnswers['gis-integration'] === 'true') {
+                    maxPossibleScore += 1;
+                    if (platform.gis >= 1) score += 1;
+                }
+                // Research Options
+                if (userAnswers['research'] === 'true') {
+                    maxPossibleScore += 1;
+                    if (platform.research >= 1) score += 1;
+                }
+                
+                if (maxPossibleScore > 0) {
+                    const percentage = (score / maxPossibleScore) * 100;
+                    scoredPlatforms.push({ ...platform, name, score, percentage });
+                }
+            }
+            scoredPlatforms.sort((a, b) => b.score - a.score);
+
+            // Score algorithms
+            let scoredAlgorithms = [];
+            if (userAnswers['ai-detection'] === 'true') {
+                for (const name in algorithms) {
+                    const algorithm = algorithms[name];
+                    let score = 0;
+                    let maxPossibleScore = 0;
+
+                    if (userAnswers['defects']) {
+                        maxPossibleScore += 1;
+                        const matchedDefects = userAnswers['defects'].filter(d => algorithm.defectTypes.includes(d));
+                        if (matchedDefects.length > 0) score += 1;
+                    }
+                    if (userAnswers['3d-reconstruction'] === 'true' && userAnswers['sensors']) {
+                        maxPossibleScore += 1;
+                        const matchedSensors = userAnswers['sensors'].filter(s => algorithm.sensors.includes(s));
+                        if (matchedSensors.length > 0) score += 1;
+                    }
+                    if (maxPossibleScore > 0) {
+                        const percentage = (score / maxPossibleScore) * 100;
+                        scoredAlgorithms.push({ ...algorithm, name, score, percentage });
+                    }
+                }
+            }
+            scoredAlgorithms.sort((a, b) => b.score - a.score);
+
+
+            let outputHtml = '';
+            
+            // Platform Recommendations
+            if (scoredPlatforms.length > 0) {
+                outputHtml += `<h3 class="text-xl font-bold text-blue-600 mb-4">Software Platforms</h3>`;
+                scoredPlatforms.slice(0, 2).forEach((platform, index) => {
+                    const stars = '⭐'.repeat(Math.floor(platform.percentage / 20));
+                    outputHtml += `
+                        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 recommendation-card">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-2xl font-bold text-blue-600">${index + 1}. ${platform.name}</h4>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-2xl">${stars}</span>
+                                    <span class="font-bold text-gray-700">${Math.round(platform.percentage)}%</span>
+                                </div>
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-4 text-gray-800">
+                                <div>
+                                    <p class="mb-1"><strong class="text-gray-700">Feasibility:</strong> ${platform.feasibility}</p>
+                                    <p class="mb-1"><strong class="text-gray-700">Input Requirements:</strong> ${platform.inputRequirements}</p>
+                                    <p class="mb-1"><strong class="text-gray-700">Vendor:</strong> <a href="${platform.links}" target="_blank" class="text-blue-500 hover:underline">${platform.vendor}</a></p>
+                                    <p class="mb-1"><strong class="text-gray-700">Used by others:</strong> ${platform.dotUsage}</p>
+                                    <p class="mt-4"><strong class="text-gray-700">Future Upgrade Path:</strong> ${platform.upgradePath}</p>
+                                </div>
+                                <div>
+                                    <p class="mb-1"><strong class="text-gray-700">Key Features:</strong></p>
+                                    <ul class="list-disc list-inside ml-4 space-y-1">
+                                        <li>AI Detection: ${platform.ai ? '✔' : '✖'}</li>
+                                        <li>Quantitative Measurement: ${platform.quantitative ? '✔' : '✖'}</li>
+                                        <li>GIS Integration: ${platform.gis ? '✔' : '✖'}</li>
+                                        <li>Research/3D: ${platform.research ? '✔' : '✖'}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // AI Algorithm Recommendations
+            if (scoredAlgorithms.length > 0 && scoredAlgorithms[0].score > 0) {
+                outputHtml += `<h3 class="text-xl font-bold text-blue-600 mt-8 mb-4">Recommended AI Algorithms</h3>`;
+                scoredAlgorithms.slice(0, 2).forEach((algorithm, index) => {
+                     const stars = '⭐'.repeat(Math.floor(algorithm.percentage / 20));
+                     outputHtml += `
+                        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 recommendation-card">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-2xl font-bold text-blue-600">${index + 1}. ${algorithm.name}</h4>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-2xl">${stars}</span>
+                                    <span class="font-bold text-gray-700">${Math.round(algorithm.percentage)}%</span>
+                                </div>
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-4 text-gray-800">
+                                <div>
+                                    <p class="mb-1"><strong class="text-gray-700">Feasibility:</strong> ${algorithm.feasibility}</p>
+                                    <p class="mb-1"><strong class="text-gray-700">Key Defect Types:</strong> ${algorithm.defectTypes.join(', ')}</p>
+                                    <p class="mb-1"><strong class="text-gray-700">Required Sensors:</strong> ${algorithm.sensors.join(', ')}</p>
+                                    <p class="mt-4"><strong class="text-gray-700">Future Upgrade Path:</strong> ${algorithm.upgradePath}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            recommendationOutput.innerHTML = outputHtml;
+            resultsSection.classList.remove('hidden');
+        }
+
+        function resetTool() {
+            userAnswers = {};
+            currentStep = 1;
+            resultsSection.classList.add('hidden');
+            recommendationOutput.innerHTML = '';
+            postStepsActions.classList.add('hidden');
+            actionButtons.classList.add('hidden');
+            selectorToolContainer.classList.remove('hidden');
+            
+            document.getElementById('step-1').classList.remove('hidden');
+            document.querySelectorAll('[id^="step-"]').forEach(step => {
+                if (step.id !== 'step-1') step.classList.add('hidden');
+            });
+            document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
+                input.checked = false;
+            });
+            progressFill.style.width = '0%';
+        }
+
+        // Add event listeners for direct answer buttons (Yes/No)
+        document.querySelectorAll('.answer-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const answer = event.target.getAttribute('data-answer');
+                const value = event.target.getAttribute('data-value');
+                userAnswers[answer] = value;
+                nextStep();
+            });
+        });
+
+        // Add event listeners for next step buttons (checkbox groups)
+        document.querySelectorAll('.next-step-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const currentStepId = button.closest('[id^="step-"]').id;
+                const checkboxes = document.querySelectorAll(`#${currentStepId} input[type="checkbox"]:checked`);
+                if (checkboxes.length > 0) {
+                    const groupName = checkboxes[0].name;
+                    userAnswers[groupName] = Array.from(checkboxes).map(cb => cb.value);
+                }
+                document.getElementById(currentStepId).classList.add('hidden');
+                
+                let nextStepId;
+                if (currentStepId === 'step-1a') nextStepId = 'step-2';
+                if (currentStepId === 'step-2a') nextStepId = 'step-3';
+                if (currentStepId === 'step-3a') nextStepId = 'step-4';
+                
+                document.getElementById(nextStepId).classList.remove('hidden');
+                currentStep = parseInt(nextStepId.split('-')[1]);
+                updateProgress();
+            });
+        });
+
+        document.getElementById('reset-button').addEventListener('click', resetTool);
+        document.getElementById('export-button-pdf').addEventListener('click', () => window.print());
+        
+        // Initial progress update
+        updateProgress();
+    </script>
+</body>
+</html>
